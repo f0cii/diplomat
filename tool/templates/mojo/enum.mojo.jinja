@@ -1,0 +1,15 @@
+@value
+@register_passable("trivial")
+struct {{ ty_name }}:
+    var _value: UInt32
+
+   {%- for enum_variant in ty.variants %}
+    alias {{fmt.fmt_enum_variant(ty_name, enum_variant)}} = {{ ty_name }}({{ enum_variant.discriminant }})
+   {%- endfor %}
+
+
+@value
+@register_passable("trivial")
+struct {{ ty_name }}_option:
+    var ok: {{ty_name}}
+    var is_ok: c_bool

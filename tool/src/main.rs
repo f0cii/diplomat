@@ -8,7 +8,7 @@ use std::path::PathBuf;
     about = "Generate bindings to a target language"
 )]
 struct Opt {
-    /// The target language, "c", "cpp", "js", "demo_gen", or "kotlin" (JVM)
+    /// The target language, "c", "cpp", "js", "demo_gen", "mojo", or "kotlin" (JVM)
     #[clap()]
     target_language: String,
 

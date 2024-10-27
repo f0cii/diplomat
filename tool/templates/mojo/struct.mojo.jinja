@@ -1,0 +1,16 @@
+{% if !fields.is_empty() %}
+@value
+@register_passable("trivial")
+struct {{ty_name}}:
+{%- for field in fields %}
+    var {{field.1}}: {{field.0}}
+{%- endfor %}
+{% endif %}
+
+{% if fields.len() != 0 -%}
+@value
+@register_passable("trivial")
+struct {{ ty_name }}_option:
+    var ok: {{ty_name}}
+    var is_ok: Bool
+{%- endif %}

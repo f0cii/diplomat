@@ -1,0 +1,11 @@
+{{ self::BASE_INCLUDES -}}
+{%- for include in includes %}
+from .{{ include }} import *
+{%- endfor %}
+{%~ match decl_include %}
+    {% when Some with (include) ~%}
+        from .{{ include.replace(".mojo", "") }} import *
+    {%~ when None %}
+{%- endmatch %}
+
+{{ body }}

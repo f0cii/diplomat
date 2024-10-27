@@ -3,6 +3,7 @@
 
 // Backends
 pub mod c;
+mod mojo;
 mod cpp;
 mod dart;
 mod demo_gen;
@@ -56,6 +57,7 @@ pub fn gen(
             attr_validator.other_backend_names = vec!["js".to_string()];
             demo_gen::attr_support()
         }
+        "mojo" => mojo::attr_support(),
         "kotlin" => kotlin::attr_support(),
         o => panic!("Unknown target: {}", o),
     };
@@ -98,6 +100,7 @@ pub fn gen(
             }
             demo_gen::run(entry, &tcx, docs_url_gen, conf)
         }
+        "mojo" => mojo::run(&tcx),
         "kotlin" => kotlin::run(&tcx, library_config),
         o => panic!("Unknown target: {}", o),
     };

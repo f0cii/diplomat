@@ -1,0 +1,42 @@
+{% for method in methods %}
+alias fn_{{ method.abi_name }} = fn ({{ method.params }}) -> {{ method.return_ty }}
+{% endfor %}
+{%~ match dtor_name %}
+{% when Some with (dtor_name) ~%}
+alias fn_{{ dtor_name }} = fn (self: UnsafePointer[{{ ty_name }}]) -> None
+{%~ when None %}
+{%- endmatch %}
+
+# Impl
+
+var __wrapper = _DLWrapper()
+
+@value
+struct _DLWrapper:
+    var _handle: DLHandle
+    {% for method in methods %}
+    var _{{ method.abi_name }}: fn_{{ method.abi_name }}
+    {% endfor %}
+    {% if dtor_name.is_some() -%}
+    var _{{ dtor_name.unwrap_or("") }}: fn_{{ dtor_name.unwrap_or("") }}
+    {%- endif %}
+
+    fn __init__(inout self):
+        self._handle = DLHandle(LIBNAME)
+        {% for method in methods %}
+        self._{{ method.abi_name }} = self._handle.get_function[fn_{{ method.abi_name }}]("{{ method.abi_name }}")
+        {% endfor %}
+        {% if dtor_name.is_some() -%}
+        self._{{ dtor_name.unwrap_or("") }} = self._handle.get_function[fn_{{ dtor_name.unwrap_or("") }}]("{{ dtor_name.unwrap_or("") }}")
+        {%- endif %}
+
+{% for method in methods %}
+@always_inline
+fn {{ method.abi_name }}({{ method.params }}) -> {{ method.return_ty }}:
+    return __wrapper._{{ method.abi_name }}({{ method.param_names }})
+{% endfor %}
+{% if dtor_name.is_some() -%}
+@always_inline
+fn {{ dtor_name.unwrap_or("") }}(self: UnsafePointer[{{ ty_name }}]) -> None:
+    return __wrapper._{{ dtor_name.unwrap_or("") }}(self)
+{%- endif %}
