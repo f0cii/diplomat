@@ -3,6 +3,8 @@ Diplomat is an experimental Rust tool for generating FFI definitions allowing ma
 
 Diplomat supports languages through a plugin interface that makes it easy to add support for your favourite language. See `tool/src/{c, cpp, js}` for examples of existing language plugins.
 
+Add support for Mojo
+
 ## Installation
 First, install the CLI tool for generating bindings:
 ```bash
