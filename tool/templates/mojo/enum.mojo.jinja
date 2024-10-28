@@ -3,9 +3,12 @@
 struct {{ ty_name }}:
     var _value: UInt32
 
-   {%- for enum_variant in ty.variants %}
+    {%- for enum_variant in ty.variants %}
     alias {{fmt.fmt_enum_variant(ty_name, enum_variant)}} = {{ ty_name }}({{ enum_variant.discriminant }})
-   {%- endfor %}
+    {%- endfor %}
+
+    fn __eq__(self, other: {{ty_name}}) -> Bool:
+        return self._value == other._value
 
 
 @value
