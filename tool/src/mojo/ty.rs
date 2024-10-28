@@ -45,6 +45,7 @@ struct ImplTemplate<'a> {
     cb_structs_and_defs: Vec<CallbackAndStructDef>,
     ty_name: Cow<'a, str>,
     dtor_name: Option<&'a str>,
+    dtor_method_name: String,
 }
 
 struct MethodTemplate<'a> {
@@ -52,6 +53,7 @@ struct MethodTemplate<'a> {
     params: String,
     param_names: String,
     abi_name: &'a str,
+    method_name: String,
 }
 
 #[derive(Clone)]
@@ -177,11 +179,13 @@ impl<'cx, 'tcx> TyGenContext<'cx, 'tcx> {
         } else {
             None
         };
+        let dtor_method_name = dtor_name.unwrap_or("").to_lowercase();
         ImplTemplate {
             ty_name,
             methods,
             cb_structs_and_defs,
             dtor_name,
+            dtor_method_name,
         }
         .render_into(&mut impl_header)
         .unwrap();
@@ -298,9 +302,12 @@ impl<'cx, 'tcx> TyGenContext<'cx, 'tcx> {
             param_names.push_str("");
         }
 
+        let method_name = abi_name.to_lowercase();
+
         (
             MethodTemplate {
                 abi_name,
+                method_name,
                 return_ty,
                 params,
                 param_names,

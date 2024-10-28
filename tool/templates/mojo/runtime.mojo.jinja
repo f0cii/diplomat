@@ -1,5 +1,7 @@
 from memory import UnsafePointer
+from sys.ffi import DLHandle
 from sys.ffi import c_char, c_size_t
+from utils import StringRef
 
 
 alias c_bool = Bool
@@ -21,8 +23,6 @@ alias c_void = UInt8
 alias c_void_ptr = UnsafePointer[c_void]
 alias c_nullptr = c_void_ptr()
 
+alias LIBNAME = "libXXX.so"
 
 {% include "capi.mojo.jinja" %}
-
-
-alias LIBNAME = "libXXX.so"
