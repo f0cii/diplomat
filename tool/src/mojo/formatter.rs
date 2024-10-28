@@ -95,6 +95,7 @@ impl<'tcx> CFormatter<'tcx> {
             SymbolId::TraitId(id) => self.fmt_trait_name(id),
             _ => panic!("Unexpected symbol ID type"),
         };
+        let type_name = type_name.to_lowercase();
         format!("{type_name}_d.mojo")
     }
     /// Resolve and format the name of a type for use in header names: impl version
@@ -104,6 +105,7 @@ impl<'tcx> CFormatter<'tcx> {
             SymbolId::TraitId(id) => self.fmt_trait_name(id),
             _ => panic!("Unexpected symbol ID type"),
         };
+        let type_name = type_name.to_lowercase();
         format!("{type_name}.mojo")
     }
 
