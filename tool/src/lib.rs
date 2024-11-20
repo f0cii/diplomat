@@ -100,6 +100,7 @@ pub fn gen(
             }
             demo_gen::run(entry, &tcx, docs_url_gen, conf)
         }
+        "mojo" => mojo::run(&tcx),
         "kotlin" => kotlin::run(&tcx, library_config, docs_url_gen),
         o => panic!("Unknown target: {}", o),
     };
