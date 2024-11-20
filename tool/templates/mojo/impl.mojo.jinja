@@ -17,7 +17,7 @@ struct _DLWrapper:
     var _{{ dtor_method_name }}: fn_{{ dtor_method_name }}
     {%- endif %}
 
-    fn __init__(inout self):
+    fn __init__(out self):
         self._handle = DLHandle(LIBNAME)
         {% for method in methods %}
         self._{{ method.method_name }} = self._handle.get_function[fn_{{ method.method_name }}]("{{ method.abi_name }}")
