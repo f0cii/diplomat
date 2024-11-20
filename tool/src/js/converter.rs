@@ -205,16 +205,16 @@ impl<'jsctx, 'tcx> TyGenContext<'jsctx, 'tcx> {
                 let type_def = self.tcx.resolve_type(id);
                 match type_def {
                     hir::TypeDef::Struct(st) if st.fields.is_empty() => {
-                        format!("new {type_name}(diplomatRuntime.internalConstructor)").into()
+                        format!("new {type_name}({{}}, diplomatRuntime.internalConstructor)").into()
                     }
                     hir::TypeDef::Struct(..) => {
-                        format!("new {type_name}(diplomatRuntime.internalConstructor, {variable_name}{edges})").into()
+                        format!("{type_name}._fromFFI(diplomatRuntime.internalConstructor, {variable_name}{edges})").into()
                     }
                     hir::TypeDef::OutStruct(st) if st.fields.is_empty() => {
-                        format!("new {type_name}(diplomatRuntime.internalConstructor)").into()
+                        format!("new {type_name}({{}}, diplomatRuntime.internalConstructor)").into()
                     }
                     hir::TypeDef::OutStruct(..) => {
-                        format!("new {type_name}(diplomatRuntime.internalConstructor, {variable_name}{edges})").into()
+                        format!("{type_name}._fromFFI(diplomatRuntime.internalConstructor, {variable_name}{edges})").into()
                     }
                     _ => unreachable!("Expected struct type def, found {type_def:?}"),
                 }
@@ -239,12 +239,12 @@ impl<'jsctx, 'tcx> TyGenContext<'jsctx, 'tcx> {
                 // Slices are always returned to us by way of pointers, so we assume that we can just access DiplomatReceiveBuf's helper functions:
                 match slice {
                     hir::Slice::Primitive(_, primitive_type) => format!(
-                        r#"new diplomatRuntime.DiplomatSlicePrimitive.getSlice(wasm, {variable_name}, "{}", {edges})"#,
+                        r#"Array.from(new diplomatRuntime.DiplomatSlicePrimitive(wasm, {variable_name}, "{}", {edges}).getValue())"#,
                         self.formatter.fmt_primitive_list_view(primitive_type)
                     )
                     .into(),
                     hir::Slice::Str(_, encoding) => format!(
-                        r#"new diplomatRuntime.DiplomatSliceStr(wasm, {variable_name},  "string{}", {edges})"#,
+                        r#"new diplomatRuntime.DiplomatSliceStr(wasm, {variable_name},  "string{}", {edges}).getValue()"#,
                         match encoding {
                             hir::StringEncoding::Utf8 | hir::StringEncoding::UnvalidatedUtf8 => 8,
                             hir::StringEncoding::UnvalidatedUtf16 => 16,
@@ -257,7 +257,7 @@ impl<'jsctx, 'tcx> TyGenContext<'jsctx, 'tcx> {
                         // We basically iterate through and read each string into the array.
                         // TODO: Need a test for this.
                         format!(
-                            r#"new diplomatRuntime.DiplomatSliceStrings(wasm, {variable_name}, "string{}", {edges})"#,
+                            r#"new diplomatRuntime.DiplomatSliceStrings(wasm, {variable_name}, "string{}", {edges}).getValue()"#,
                             match encoding {
                                 hir::StringEncoding::Utf8
                                 | hir::StringEncoding::UnvalidatedUtf8 => 8,
